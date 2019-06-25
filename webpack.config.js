@@ -5,7 +5,7 @@ var HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: "./src/app.js",
   output: {
-    path: path.resolve(__dirname, "./out"),
+    path: path.resolve(__dirname, "../nodejs-ws-back-chat200/public"),
     filename: "bundle.js"
   },
   module:{

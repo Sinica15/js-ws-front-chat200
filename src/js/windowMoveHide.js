@@ -1,3 +1,5 @@
+import * as cookWork from './cookieWork';
+
 let topPanel = document.getElementById('top_controls');
 let chatMainContainer = document.getElementById('chat_main');
 
@@ -47,11 +49,13 @@ let chatBodyContainer = document.getElementById('body_container');
 
 let notHiddenHeight = 600;
 
-chatBodyContainer.style.height = notHiddenHeight + 'px';
+// chatBodyContainer.style.height = notHiddenHeight + 'px';
 hideButton.onclick = function () {
     if (chatBodyContainer.style.height == (notHiddenHeight + 'px')){
         chatBodyContainer.style.height = '16px';
+        cookWork.setCookie('chatHeight', '16px');
     } else {
         chatBodyContainer.style.height = notHiddenHeight + 'px';
+        cookWork.setCookie('chatHeight', '600px');
     }
 };

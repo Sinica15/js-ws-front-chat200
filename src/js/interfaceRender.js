@@ -1,7 +1,15 @@
+import * as cookWork from './cookieWork';
+
 var div = document.createElement('div');
 div.className = 'chat-main-container';
 div.id = 'chat_main';
 document.body.appendChild(div);
+
+let chatHeight = cookWork.getCookie('chatHeight');
+if (chatHeight == null){
+    chatHeight = '600px';
+}
+
 div.innerHTML =
     '<div id="form_back">\n' +
     '    <div id="register_form">\n' +
@@ -17,7 +25,7 @@ div.innerHTML =
     '        <div class="common-button" id="register_button">Register</div>\n' +
     '    </div>\n' +
     '</div>\n' +
-    '<div id="body_container" class="chat-body-container">\n' +
+    '<div id="body_container" class="chat-body-container" style="height:' + chatHeight + '">\n' +
     '    <div class="top-controls" id="top_controls">' +
     '        <span id="userlist" class="userlist"></span>' +
     '        <span class="top-hide" id="hide_window"></span>' +
@@ -38,9 +46,11 @@ div.innerHTML =
     '          <input id="message" class="def_input" placeholder="Type your message">\n' +
     '          <div id="message_buttons_container">\n' +
     '              <div class="bottom-button common-button" id="send_button">Send</div>\n' +
-    '              <div class="bottom-button common-button" id="leave_button">Leave</div>\n' +
-    '              <div class="bottom-button common-button" id="exit_button">Exit</div>\n' +
+    // '              <div class="bottom-button common-button" id="leave_button">Leave</div>\n' +
+    // '              <div class="bottom-button common-button" id="exit_button">Exit</div>\n' +
     '          </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '</div>';
+
+
