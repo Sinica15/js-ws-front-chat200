@@ -1,68 +1,61 @@
 import * as cookWork from './cookieWork';
+import {forRenderArticle} from './interfaceRender';
 
 // small helper function for selecting element by id
 let id = id => document.getElementById(id);
 
-//Establish the WebSocket connection and set up event handlers
-const PORT = +location.port + 1;
-let ws = new WebSocket("ws://" + location.hostname + ":" + PORT + "/chat");
-console.log("connected");
+export function wsControl() {
+    let ws = wsConnect();
+    // Add event listeners to button and input field
+    id("message").addEventListener("keypress", function (e) {
+        if (e.keyCode === 13) {
+            // Send message if enter is pressed in input field
+            sendAndClear(ws, e.target.value);
+        }
+    });
+    id("send_button").addEventListener("click", () => sendAndClear(ws, id("message").value));
+    id("register_button").addEventListener("click", () => {
+        if(id("userName").value.trim() == ""){
+            alert("Name field can't be empty");
+        }
+        // if (id("userName").value.trim() != "" && id("client").checked) {
+        //     console.log("!register " + id("userName").value.trim() + " 0");
+        //     sendAndClear("0 " + id("userName").value.trim(), "register");
+        //     id("form_back").remove();
+        //     return;
+        // }
+    });
 
-ws.onopen = () => {
-    ws.send(
-    JSON.stringify({
-        msgType : "service",
-        action : "setConnectionType",
-    }));
-};
+}
 
-ws.onmessage = msg => updateChat(JSON.parse(msg.data));
+function wsConnect() {
+    //Establish the WebSocket connection and set up event handlers
+    let port_corrector = 1; // 1 - for build, 5 - for dev
+    if (location.port == 9000) port_corrector = 5;
+    const PORT = +location.port + port_corrector;
+    let ws = new WebSocket("ws://" + location.hostname + ":" + PORT + "/chat");
+    console.log("connected");
+    ws.onopen = () => {
+        ws.send(
+            JSON.stringify({
+                msgType : "service",
+                action : "setConnectionType",
+            }));
+    };
+    ws.onmessage = msg => updateChat(JSON.parse(msg.data));
+    ws.onclose = () => console.log("WebSocket connection closed");
+    return ws;
+}
 
-ws.onclose = () => console.log("WebSocket connection closed");
-
-// Add event listeners to button and input field
-id("message").addEventListener("keypress", function (e) {
-    if (e.keyCode === 13) {
-        // Send message if enter is pressed in input field
-        sendAndClear(e.target.value);
-    }
-});
-id("send_button").addEventListener("click", () => sendAndClear(id("message").value));
-id("register_button").addEventListener("click", () => {
-    if(id("userName").value.trim() == ""){
-        alert("Name field can't be empty");
-    }
-    // if (id("userName").value.trim() != "" && id("agent").checked) {
-    //     console.log("!register " + id("userName").value.trim() + " 1");
-    //     sendAndClear("1 " + id("userName").value.trim(), "register");
-    //     id("form_back").remove();
-    //     return;
-    // }
-    // if (id("userName").value.trim() != "" && id("client").checked) {
-    //     console.log("!register " + id("userName").value.trim() + " 0");
-    //     sendAndClear("0 " + id("userName").value.trim(), "register");
-    //     id("form_back").remove();
-    //     return;
-    // }
-});
-// id("leave_button").addEventListener("click", () => {
-//     console.log("!leave");
-//     sendAndClear("", "leave");
-// });
-// id("exit_button").addEventListener("click", () => {
-//     console.log("!exit");
-//     sendAndClear("", "exit");
-// });
-
-function sendAndClear(message, mode) {
+function sendAndClear (ws, message, mode) {
     mode = mode || "message";
-    if (message != "" || mode != "message") {
-        console.log("sending");
-
+    if (message.trim() != "" || mode != "message") {
+        console.log("sending1");
         ws.send(JSON.stringify({
             message : message
         }));
         if (mode == "message") {
+            id("message").value = "";
             id("message").value = "";
             updateChat({
                 message : message,
@@ -97,20 +90,7 @@ function renderMsg(received) {
 
     console.log('rendering');
 
-    let locDate = new Date(received.date);
-    let time = locDate.toLocaleDateString() + ' ' + locDate.toLocaleTimeString('ru');
-
-    let fromWhoClass = received.fromWho + '-article';
-
-    let forRender = (
-        `<article class="${fromWhoClass}">` +
-        `<p>${received.message}</p>` +
-        '<p class="sender-datetime">' +
-        `<span class="sender">${received.fromWho} </span>`+
-        `<span class="datetime">${time}</span>`+
-        '</p>' +
-        '</article>'
-    );
+    let forRender = forRenderArticle(received);
 
     id("chat").insertAdjacentHTML("afterbegin", forRender);
 }

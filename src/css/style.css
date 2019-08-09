@@ -11,6 +11,8 @@ body {
 .chat-main-container {
 	position: fixed;
 	width: 400px;
+	top: calc(100vh - 620px);
+	left: calc(100vw - 420px);
 }
 
 .chat-body-container {
@@ -43,6 +45,7 @@ body {
 	width: 100%;
 	padding: 5px;
 	margin-bottom: 10px;
+	resize: none;
 }
 
 .msgType-area {

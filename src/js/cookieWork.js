@@ -22,9 +22,9 @@ export function setCookie(name, value, options) {
         options.expires = expires.toUTCString();
     }
 
-    value = encodeURIComponent(value);
+    // value = encodeURIComponent(value);
 
-    let updatedCookie = name + "=" + value;
+    let updatedCookie = name + "=" + (value);
 
     for (let propName in options) {
         updatedCookie += "; " + propName;
