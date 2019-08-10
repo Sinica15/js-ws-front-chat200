@@ -1,11 +1,12 @@
-var path = require("path");
-var HtmlWebpackPlugin = require("html-webpack-plugin");
+const express = require("express");
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: "./src/app.js",
   output: {
     path: path.resolve(__dirname, "../nodejs-ws-back-chat200/public"),
-    filename: "bundle.js"
+    filename: "client_bundle.js"
   },
   module:{
         rules:[
@@ -15,11 +16,11 @@ module.exports = {
             }
        ]
     },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./src/index.html"
-    })
-  ],
+  // plugins: [
+  //   new HtmlWebpackPlugin({
+  //     template: "./src/some_page.html"
+  //   })
+  // ],
   devServer: {
     contentBase: path.join(__dirname, "dist"),
 //    open: true,

@@ -12,3 +12,5 @@ if (location.port != 9000) configRequest();
 guiRender();
 wsControl();
 windowActions();
+
+// alert('fff');
