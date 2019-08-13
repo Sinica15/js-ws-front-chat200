@@ -39,7 +39,8 @@ function wsConnect() {
         ws.send(
             JSON.stringify({
                 msgType : "service",
-                action : "setConnectionType",
+                action : "registration",
+                message : "client"
             }));
     };
     ws.onmessage = msg => updateChat(JSON.parse(msg.data));
@@ -56,9 +57,8 @@ function sendAndClear (ws, message, mode) {
         }));
         if (mode == "message") {
             id("message").value = "";
-            id("message").value = "";
             updateChat({
-                message : message,
+                message : message.trim(),
                 fromWho : 'sender',
                 date : new Date().toString()
             });
