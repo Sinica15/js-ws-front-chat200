@@ -12,6 +12,7 @@
 }
 
 .userlist{
+    text-align: center;
     display: inline-block;
     width: calc( 100% - var(--top-corner) );
     transition: 1s;

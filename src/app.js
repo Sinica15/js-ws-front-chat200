@@ -6,11 +6,19 @@ import './css/topControls.css';
 import {guiRender} from "./js/interfaceRender";
 import {wsControl} from "./js/WS";
 import {windowActions} from "./js/windowMoveHide";
-import {configRequest} from "./js/chatConfigChecker";
+import {configObj, configRequest} from "./js/chatConfigChecker";
 
-if (location.port != 9000) configRequest();
-guiRender();
-wsControl();
-windowActions();
+export let PORT = 9004;
 
-// alert('fff');
+let lifecycle = (config) => {
+    guiRender(config);
+    wsControl(config);
+    windowActions(config);
+};
+
+
+configRequest()
+    .then(
+        config => lifecycle(config),
+        defConf => lifecycle(defConf)
+    );

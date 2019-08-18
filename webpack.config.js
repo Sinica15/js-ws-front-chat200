@@ -16,11 +16,11 @@ module.exports = {
             }
        ]
     },
-  // plugins: [
-  //   new HtmlWebpackPlugin({
-  //     template: "./src/some_page.html"
-  //   })
-  // ],
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/some_page.html"
+    })
+  ],
   devServer: {
     contentBase: path.join(__dirname, "dist"),
 //    open: true,

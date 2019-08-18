@@ -1,40 +1,34 @@
 import * as cookWork from './cookieWork';
 
-export function windowActions(){
+export function windowActions(config){
     let topPanel = document.getElementById('top_controls');
     let chatMainContainer = document.getElementById('chat_main');
 
-    topPanel.onmousedown = function (e) {
-        let coords = getCoords(chatMainContainer);
-        let shiftX = e.pageX - coords.left;
-        let shiftY = e.pageY - coords.top;
+    if(config.allow_drag){
+        topPanel.onmousedown = function (e) {
+            let coords = getCoords(chatMainContainer);
+            let shiftX = e.pageX - coords.left;
+            let shiftY = e.pageY - coords.top;
 
-        // console.log(
-        //     e.pageX,
-        //     e.pageY,
-        //     coords.left,
-        //     coords.top
-        // );
+            function moveAt(e) {
+                chatMainContainer.style.left = e.pageX - shiftX + 'px';
+                chatMainContainer.style.top = e.pageY - shiftY + 'px';
+            }
 
-        function moveAt(e) {
-            chatMainContainer.style.left = e.pageX - shiftX + 'px';
-            chatMainContainer.style.top = e.pageY - shiftY + 'px';
-        }
+            document.onmousemove = function(e) {
+                moveAt(e);
+            };
 
-        document.onmousemove = function(e) {
-            moveAt(e);
+            topPanel.onmouseup = function() {
+                document.onmousemove = null;
+                topPanel.onmouseup = null;
+            };
         };
 
-        topPanel.onmouseup = function() {
-            document.onmousemove = null;
-            topPanel.onmouseup = null;
+        topPanel.ondragstart = function() {
+            return false;
         };
-
-    };
-
-    topPanel.ondragstart = function() {
-        return false;
-    };
+    }
 
     function getCoords(elem) {   // кроме IE8-
         let box = elem.getBoundingClientRect();
@@ -50,13 +44,15 @@ export function windowActions(){
     let notHiddenHeight = 600;
 
 // chatBodyContainer.style.height = notHiddenHeight + 'px';
-    hideButton.onclick = function () {
-        if (chatBodyContainer.style.height == (notHiddenHeight + 'px')){
-            chatBodyContainer.style.height = '16px';
-            cookWork.setCookie('chatHeight', '16px');
-        } else {
-            chatBodyContainer.style.height = notHiddenHeight + 'px';
-            cookWork.setCookie('chatHeight', '600px');
-        }
-    };
+    if(config.allow_to_minimize) {
+        hideButton.onclick = function () {
+            if (chatBodyContainer.style.height == (notHiddenHeight + 'px')){
+                chatBodyContainer.style.height = '16px';
+                cookWork.setCookie('chatHeight', '16px');
+            } else {
+                chatBodyContainer.style.height = notHiddenHeight + 'px';
+                cookWork.setCookie('chatHeight', '600px');
+            }
+        };
+    }
 }

@@ -1,54 +1,73 @@
 import * as cookWork from './cookieWork';
 import {forRenderArticle} from './interfaceRender';
+import {configObj} from "./chatConfigChecker";
+import {checkForCommand, writeMsgCook, renderMsg} from './msgsIOActions'
 
 // small helper function for selecting element by id
 let id = id => document.getElementById(id);
 
-export function wsControl() {
-    let ws = wsConnect();
+let ws;
+
+export function wsControl(config) {
+    ws = wsConnect(configObj.require_name);
     // Add event listeners to button and input field
     id("message").addEventListener("keypress", function (e) {
         if (e.keyCode === 13) {
             // Send message if enter is pressed in input field
-            sendAndClear(ws, e.target.value);
+            sendAndClear(e.target.value);
+            if(e.preventDefault) e.preventDefault();
+            return false;
         }
     });
-    id("send_button").addEventListener("click", () => sendAndClear(ws, id("message").value));
+    id("send_button").addEventListener("click", () => sendAndClear(id("message").value));
     id("register_button").addEventListener("click", () => {
         if(id("userName").value.trim() == ""){
-            alert("Name field can't be empty");
+            id("userName").placeholder = "Name field can't be empty!";
+            setTimeout(id("userName").placeholder = "Enter your Name", 3000);
         }
-        // if (id("userName").value.trim() != "" && id("client").checked) {
-        //     console.log("!register " + id("userName").value.trim() + " 0");
-        //     sendAndClear("0 " + id("userName").value.trim(), "register");
-        //     id("form_back").remove();
-        //     return;
-        // }
+        if (id("userName").value.trim() != "") {
+            // console.log("!register " + id("userName").value.trim() + " 0");
+            ws.send(
+                JSON.stringify({
+                    msgType : "service",
+                    action : "registration",
+                    message : `client ${id("userName").value.trim()}`
+                }));
+            id("form_back").style.display = 'none';
+        }
     });
 
 }
 
-function wsConnect() {
+function wsConnect(reqName) {
     //Establish the WebSocket connection and set up event handlers
     let port_corrector = 1; // 1 - for build, 5 - for dev
     if (location.port == 9000) port_corrector = 5;
     const PORT = +location.port + port_corrector;
     let ws = new WebSocket("ws://" + location.hostname + ":" + PORT + "/chat");
-    console.log("connected");
     ws.onopen = () => {
-        ws.send(
-            JSON.stringify({
-                msgType : "service",
-                action : "registration",
-                message : "client"
-            }));
+        console.log("connected", reqName);
+        if (!reqName){
+            sendServiceMsg('registration', 'client');
+        }
     };
     ws.onmessage = msg => updateChat(JSON.parse(msg.data));
     ws.onclose = () => console.log("WebSocket connection closed");
     return ws;
 }
 
-function sendAndClear (ws, message, mode) {
+export function sendServiceMsg(action, msg) {
+    console.log(`sending service msg:`, action, msg);
+    ws.send(
+        JSON.stringify({
+            msgType : "service",
+            action : action,
+            message : msg
+    }))
+}
+
+function sendAndClear (message, mode) {
+    console.log(ws);
     mode = mode || "message";
     if (message.trim() != "" || mode != "message") {
         console.log("sending1");
@@ -67,30 +86,8 @@ function sendAndClear (ws, message, mode) {
 }
 
 function updateChat(received) {
-
     console.log(received);
-
+    if (checkForCommand(received)) return;
     writeMsgCook(received);
     renderMsg(received);
-}
-
-function writeMsgCook(received) {
-    if(cookWork.getCookie('messages') == null){
-        cookWork.setCookie('messages', JSON.stringify({msgs : []}));
-        console.log('messages', JSON.stringify({msgs : []}));
-    }
-    let messages = JSON.parse(cookWork.getCookie('messages'));
-    console.log(messages);
-    messages.msgs.push(received);
-    cookWork.setCookie('messages', JSON.stringify(messages));
-    console.log('messages', JSON.stringify(messages));
-}
-
-function renderMsg(received) {
-
-    console.log('rendering');
-
-    let forRender = forRenderArticle(received);
-
-    id("chat").insertAdjacentHTML("afterbegin", forRender);
 }

@@ -1,6 +1,7 @@
 import * as cookWork from './cookieWork';
 import {configObj} from "./chatConfigChecker";
 
+
 export function forRenderArticle(received) {
     console.log('forming article');
 
@@ -8,25 +9,37 @@ export function forRenderArticle(received) {
     let time = locDate.toLocaleDateString() + ' ' + locDate.toLocaleTimeString('ru');
 
     let fromWhoClass = received.fromWho + '-article';
+    let dateTime = () => {
+        if (configObj.show_data_time)
+            return `<span class="datetime">${time}</span>`
+        return '';
+    };
 
     return (
         `<article class="${fromWhoClass}">` +
         `<p>${received.message}</p>` +
         '<p class="sender-datetime">' +
         `<span class="sender">${received.fromWho} </span>`+
-        `<span class="datetime">${time}</span>`+
+        dateTime()+
         '</p>' +
         '</article>'
     );
 }
 
-export function guiRender () {
+export function guiRender (config) {
 
     console.log('interfRen');
 
     let div = document.createElement('div');
     div.className = 'chat-main-container';
     div.id = 'chat_main';
+    // console.log('pos:' ,config.position, config.position == 'left');
+    if(config.position == 'left') {
+        div.style.position = 'fixed';
+        div.style.left = '20px';
+        div.style.top = 'calc(100vh - 620px)';
+    }
+
     document.body.appendChild(div);
 
     let chatHeight = cookWork.getCookie('chatHeight');
@@ -45,25 +58,17 @@ export function guiRender () {
         messages.msgs.reverse().forEach(msg => articles += forRenderArticle(msg));
     }
 
-    console.log('inner HTML', configObj);
+    console.log('inner HTML');
     div.innerHTML =
         '<div id="form_back">\n' +
-        '    <div id="register_form">\n' +
-        '        <input type="text" placeholder="Type your Name" id="userName">\n' +
-        '        <span>\n' +
-        '            <input type="radio" id="agent" name="userType">\n' +
-        '            <label for="agent">Agent</label>\n' +
-        '        </span>\n' +
-        '        <span>\n' +
-        '            <input type="radio" id="client" name="userType">\n' +
-        '            <label for="client">Client</label>\n' +
-        '        </span>\n' +
-        '        <div class="common-button" id="register_button">Register</div>\n' +
+        `    <div id="register_form" ${config.require_name ? '' : 'style = "display: none;"'}>\n` +
+        '        <input type="text" placeholder="Enter your Name" id="userName">\n' +
+        '        <button class="common-button" id="register_button">Enter</button>\n' +
         '    </div>\n' +
         '</div>\n' +
         '<div id="body_container" class="chat-body-container" style="height:' + chatHeight + '">\n' +
         '    <div class="top-controls" id="top_controls">' +
-        `        <span id="userlist" class="userlist"></span>` +
+        `        <span id="userlist" class="userlist">${config.chat_title === undefined ? '' : config.chat_title}</span>` +
         '        <span class="top-hide" id="hide_window"></span>' +
         '    </div>' +
         '    <div id="chat" class="chat">\n' +
@@ -75,7 +80,7 @@ export function guiRender () {
         // '          <input id="message" class="def_input" placeholder="Type your message">\n' +
         '          <textarea id="message" class="def_input" placeholder="Type your message"></textarea>\n' +
         '          <div id="message_buttons_container">\n' +
-        '              <div class="bottom-button common-button" id="send_button">Send</div>\n' +
+        '              <button class="bottom-button common-button" id="send_button">Send</button>\n' +
         // '              <div class="bottom-button common-button" id="leave_button">Leave</div>\n' +
         // '              <div class="bottom-button common-button" id="exit_button">Exit</div>\n' +
         '          </div>\n' +

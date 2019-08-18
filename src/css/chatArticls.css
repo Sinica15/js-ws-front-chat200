@@ -3,9 +3,7 @@
     flex-direction: column-reverse;
     height: 83%;
     overflow: auto;
-    padding: 0 6px;
-    padding-top: 5px;
-    padding-bottom: 7px;
+    padding: 5px 6px 10px;
 }
 
 .chat article{
@@ -51,6 +49,7 @@
     opacity: 0;
     transition: 0.7s;
     left: 10px;
+    top: 33px;
     /*display: none;*/
 }
 
