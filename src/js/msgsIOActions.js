@@ -2,6 +2,8 @@ import * as cookWork from "./cookieWork";
 import {forRenderArticle} from "./interfaceRender";
 import {sendServiceMsg} from "./WS";
 
+let id = (id) => document.getElementById(id);
+
 function getGeoData(ApiUrl) {
     fetch(ApiUrl)
         .then(
@@ -12,7 +14,7 @@ function getGeoData(ApiUrl) {
         }))
     ).catch(
         err => sendServiceMsg('response action', JSON.stringify({
-            response : `some problem: ${err}`,
+            response : JSON.stringify({error : `some problem: ${err}`}),
         }))
     );
 }
