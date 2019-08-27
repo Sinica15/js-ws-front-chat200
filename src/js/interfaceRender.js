@@ -60,8 +60,8 @@ export function guiRender (config) {
 
     console.log('inner HTML');
     div.innerHTML =
-        '<div id="form_back">\n' +
-        `    <div id="register_form" ${config.require_name ? '' : 'style = "display: none;"'}>\n` +
+        `<div id="form_back" ${config.require_name ? '' : 'style = "display: none;"'}>\n` +
+        `    <div id="register_form">\n` +
         '        <input type="text" placeholder="Enter your Name" id="userName">\n' +
         '        <button class="common-button" id="register_button">Enter</button>\n' +
         '    </div>\n' +
